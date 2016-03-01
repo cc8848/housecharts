@@ -12,7 +12,7 @@ var houseController = require('./controllers/houseController.js')
 var app = express();
 
 // Application Configuration \\
-mongoose.connect('mongodb://localhost/housesDB');
+mongoose.connect('mongodb://localhost/homeinfo');
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -27,6 +27,8 @@ app.get('/', function(req, res){
 });
 
 
+
+app.post('/api/getYearBuilt', houseController.getYearBuilt);
 
 app.post('/api/searchMany', houseController.getManyHouses);
 app.post('/api/getAllPrices', houseController.getAllPrices);

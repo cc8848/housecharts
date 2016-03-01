@@ -11,6 +11,21 @@ myApp.controller('myAppController',['$scope', '$http', function($scope,$http){
     console.log("IS IT WORKING");
 
 
+
+s.getYearBuilt = function(){
+    $http.post('/api/getYearBuilt')
+        .then(function(array){
+            s.newArray = array.data;
+            console.log(s.newArray)
+            // yearBuilt(s.newArray);
+            // var yearArray = 
+            // //pass the obj through - do I need to make it an array of arrays first?
+            // buildScatterChart(scatterArray);
+        })
+   }
+   s.getYearBuilt();
+
+
    s.getPrices = function(){
     $http.post('/api/getAllPrices')
         .then(function(array){
@@ -180,59 +195,117 @@ function buildScatterChart(scatterArray){
 
                 }]
             });
+
         });
 
 
-}
+//------------------------------------------------
+$(function () {
+    $('#containerYear').highcharts({
+        chart: {
+            type: 'scatter',
+            zoomType: 'xy'
+        },
+        title: {
+            text: 'Square Footage vs Year Built'
+        },
+        subtitle: {
+            text: 'Source: MLS'
+        },
+        xAxis: {
+            title: {
+                enabled: true,
+                text: 'Year Built'
+            },
+            startOnTick: true,
+            endOnTick: true,
+            showLastLabel: true,
+            max:2016,
+        },
+        yAxis: {
+            title: {
+                text: 'Square Feet',
+            },
+            max:7000,
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'left',
+            verticalAlign: 'top',
+            x: 100,
+            y: 70,
+            floating: true,
+            backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
+            borderWidth: 1
+        },
+        plotOptions: {
+            scatter: {
+                marker: {
+                    radius: 3,
+                    states: {
+                        hover: {
+                            enabled: true,
+                            lineColor: 'rgb(100,100,100)'
+                        }
+                    }
+                },
+                states: {
+                    hover: {
+                        marker: {
+                            enabled: false
+                        }
+                    }
+                },
+                tooltip: {
+                    headerFormat: '<b>{series.name}</b><br>',
+                    pointFormat: '{point.x}, {point.y}'
+                }
+            }
+        },
+        series: [{
+            name: 'House',
+            color: 'rgba(223, 83, 83, .5)',
+            data: s.newArray
+        }]
+    });
+});
 
-//-------------------------------------------------
 
 
+// $(function () {
+//     $('#containerYear').highcharts({
+//         xAxis: {
+//             min: -0.5,
+//             max: 5.5
+//         },
+//         yAxis: {
+//             min: 0
+//         },
+//         title: {
+//             text: 'Scatter plot with regression line'
+//         },
+//         series: [{
+//             type: 'line',
+//             name: 'Regression Line',
+//             data: s.newArray,
+//             marker: {
+//                 enabled: false
+//             },
+//             states: {
+//                 hover: {
+//                     lineWidth: 0
+//                 }
+//             },
+//             enableMouseTracking: false
+//         }, {
+//             type: 'scatter',
+//             name: 'Observations',
+//             data: [1, 1.5, 2.8, 3.5, 3.9, 4.2],
+//             marker: {
+//                 radius: 4
+//             }
+//         }]
+//     });
+// });
 
-	s.findHouse = function (){
-        s.houses = [];
-        console.log("we are in the find house click event. ")
-		console.log(s.search.MLSNumber);
-		$http.post('/api/houseFind',s.search)
-			.then (function(data){
-				console.log("we are in the return of the post ",data);
-				s.house = data.data;
-                s.search = {};
-			});
-	}
-    
-    s.findHouseMaxPrice = function (){
-        
-        console.log("we are in the find house MAX click event. ")
-		console.log(s.search.MLSNumber);
-        s.house={};
-        $http.post('/api/houseFind/Max',s.search)
-			.then (function(data){
-				console.log("we are in the return of the post ",data);
-			s.houses = [];	
-            s.houses = data.data;
-            s.search = {};
-               // s.houses[0]=s.houses[0];
-//                data.data.forEach(function(item){
-//                    s.houses.push(item);
-//                })
-            
-			});
-        
-        
-    }
-    
-    s.manySearch = function(){
-        console.log("we are in teh angular s.manySearch function", s.multiSearch)
-        $http.post('/api/manySearch',s.multiSearch)
-            .then(function(data){
-                console.log("we're back in the response of many criteria search, " ,data.data.length," spots in array");
-                s.houses=data.data;
-            });
-    }
-
-
-    
-
-
-}]);
+}}])

@@ -56,4 +56,4 @@ var houseSchema = mongoose.Schema({
     
 })
 
-module.exports = mongoose.model('houses',houseSchema);
+module.exports = mongoose.model('homes',houseSchema);
