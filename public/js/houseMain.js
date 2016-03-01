@@ -14,7 +14,7 @@ myApp.controller('myAppController',['$scope', '$http', function($scope,$http){
     s.getPricesAndSF = function(){
         $http.post('/api/getPricesAndSF')
             .then(function(returnedData){
-                console.log("in return of post get prices and SF this work? ",returnedData.data);
+                console.log("in return of post get prices and SF,does this work? obj of arrays? ",returnedData);
                 buildScatterChartSF(returnedData.data);
 
             })
@@ -211,7 +211,7 @@ function buildScatterChartSF(scatterArraySF){
                     zoomType: 'xy'
                 },
                 title: {
-                    text: 'Prices of houses in Denver'
+                    text: 'Prices and total SF of new listings in Denver'
                 },
                 subtitle: {
                     text: 'Source: MLS'
