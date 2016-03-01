@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html ng-app="googleMap">
+  <head>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.8/angular.js"></script>
+   
+     <script 
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD5ylZNoESDoX9aOsHGMwc-91sK-YpfzQg&libraries=places">
+    </script>
+
+      <script src="http://code.jquery.com/jquery-1.12.0.min.js"></script>
+     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>  
+
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.css">
+
+  <link rel="stylesheet" type="text/css" href="../css/angular-range-slider.css">
+  <script src="../js/angular-range-slider.js"></script>
+
+  <link rel="stylesheet" href="../font-awesome-4.5.0/css/font-awesome.min.css">
+
+     <script type="text/javascript" src="../js/testing.js"></script>
+      <link rel="stylesheet" type="text/css" href="../css/googleMaps.css">
+        
+    
+  </head>
+    
+  <body ng-controller="appController" ng-click="bodyClick()" class="setSize">
+
+
+  <div class="myContainer">
+                  
+
+      <div class="myNavBar">
+
+       
+       <div class="container-fluid">
+        <div class="row menuBar">
+
+             <div class="col-xs-3">
+               <a data-toggle="modal" data-target="#housePreferencesModal" ng-click="closeInfoWindow()"> <span class="glyphicon glyphicon-home" aria-hidden="true"></span> </a>
+             </div><!---end column-->
+              <div class="col-xs-3">
+                <a data-toggle="modal" data-target="#myModal" ng-click="closeInfoWindow()"> <span class="glyphicon glyphicon-search" aria-hidden="true"></span> </a>
+              </div><!---end column-->
+              <div class="col-xs-3">
+               <a data-toggle="modal" data-target="#userProfileModal" ng-click="closeInfoWindow()"> <span class="glyphicon glyphicon-user" aria-hidden="true"></span> </a>
+              </div><!---end column-->
+              <div class="col-xs-3">
+                <a data-toggle="modal" data-target="#userFavoritesModal" ng-click="closeInfoWindow()"> <span class="glyphicon glyphicon-heart" aria-hidden="true"></span> </a>
+              </div><!---end column-->
+            
+          </div><!--end row-->
+        
+        </div> <!--end fluid container-->
+
+<!---------------------------------->
+      </div>
+              
+            <!---search mag glass modal-->
+              <div id="myModal" class="modal fade" role="dialog">
+                <div class="modal-dialog modal-sm">
+      
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h4 class="modal-title">Enter Address or City</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+
+                              <input ng-model="searchCity" type="text" class="form-control" placeholder="Search">
+                         </div>  <!--end form group-->
+                    </div><!--end modal body-->
+                    
+                    <div class="modal-footer">
+                        
+                        <button ng-click="consoleCity()" type="submit" data-dismiss="modal" class="btn btn-default">Search</button>
+                    </div>
+                  </div><!--modal content-->
+                </div>
+
+              </div> <!--modal-->
+
+              <!------------------------------------------------------criteria modal------------------------------>
+              <div id="housePreferencesModal" class="modal fade" role="dialog">
+                <div class="modal-dialog modal-sm">
+      
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h4 class="modal-title">Adjust Housing Preferences</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                              <!--add sliders here-->
+
+                         <!--single slider for min beds-->
+
+                         <p>Bedrooms {{sliderBeds}} +</p>
+                          <div range-slider
+                               floor="0"
+                               ceiling="5"
+                               step="1"
+                               precision="1"
+                               highlight="left"
+                               ng-model="slider.Beds"></div>
+
+                         <!--single slider for min baths-->
+
+                         <p>Bathrooms {{sliderBaths}} +</p>
+                          <div range-slider
+                               floor="1"
+                               ceiling="5"
+                               step=".5"
+                               precision="2"
+                               highlight="left"
+                               ng-model="slider.Baths"></div>
+
+                       <!--single slider for min total sf-->
+
+                         <p>Total Square Feet {{addComma(sliderMinSF)}} +</p>
+                          <div range-slider
+                               floor="400"
+                               ceiling="5000"
+                               step="100"
+                               precision="2"
+                               highlight="left"
+                               ng-model="slider.MinSF"></div>
+
+
+                         <!--range slider for price-->     
+                         <p>Min Price: {{addComma(sliderMinPrice) || 0}}</p>
+                            <p>Max Price: {{addComma(sliderMaxPrice) || 0}}</p>
+                            <div range-slider
+                                 floor="25000"
+                                 ceiling="1000000"
+                                 step="25000"
+                                 dragstop="false"
+                                 ng-model-low="slider.MinPrice"
+                                 ng-model-high="slider.MaxPrice"></div>
+
+                          <!--add a property type dual check box, allow one or both to be selected-->
+
+                         </div>  <!--end form group-->
+                    </div><!--end modal body-->
+                    
+                    <div class="modal-footer">
+                        
+
+                        <button ng-click="printUser()" type="submit"  class="btn btn-default">Cancel</button>
+
+                        <button ng-click="changeCriteria()" type="submit" data-dismiss="modal" class="btn btn-default filterButton">Filter Results</button>
+                      
+                      </div>
+                   </div><!--modal content-->
+                 </div>
+
+               </div> <!--modal-->
+      
+    <!---------------------userProfileModal------------------------------->
+                
+              <div id="userProfileModal" class="modal fade" role="dialog">
+                <div class="modal-dialog modal-sm">
+      
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h4 class="modal-title">Welcome, {{myUser.fname}}!</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <!--put user info here in editable fields-->
+                            <h4>Name : {{myUser.userName()}}</h4> 
+                            <h4>Phone :{{myUser.phone}}</h4>
+                            <h4>Email : {{myUser.email}}</h4>
+                            <br/>
+                            <h4 class="agent">Brix Agent : Ariel Boyle</h4>
+                         </div>  <!--end form group-->
+                    </div><!--end modal body-->
+                    
+                    <div class="modal-footer">
+                        <button ng-click="" type="submit" data-dismiss="modal" class="btn btn-default">Edit Info</button>
+                    
+                        <button ng-click="printUser()" type="submit" data-dismiss="modal" class="btn btn-default">Sign Out</button>
+                    </div>
+                  </div><!--modal content-->
+                </div>
+
+              </div> <!--modal-->
+
+    <!-----------------------end userProfileModal------------------------->
+      
+              <div id="userFavoritesModal" class="modal fade" role="dialog">
+                <div class="modal-dialog modal-sm">
+      
+                  <!-- Modal content-->
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h4 class="modal-title">{{myUser.fname}}'s Favorites!</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <!--put user info here in editable fields-->
+                            
+                            <div  class="favoritesModal" ng-repeat="ref in myUser.preferences.favorites">
+                                    <h4 class="favoritesText"> {{ref.addressString}}</h4>
+                            </div>
+                            
+                            <h4 class="agent">Brix Agent : Ariel Boyle</h4>
+                         </div>  <!--end form group-->
+                    </div><!--end modal body-->
+                    
+                    <div class="modal-footer">
+                        
+                        <button ng-click="clearFavorites()" type="submit"  class="btn btn-default">Remove All</button>
+                    
+                        <button ng-click="" type="submit" data-dismiss="modal" class="btn btn-default">Edit List</button>
+                    </div>
+                  </div><!--modal content-->
+                </div>
+
+              </div> <!------------heart-modal---------->      
+      
+      
+      
+      
+      
+         <div id="map" class="myMap"></div>
+
+      <div class="autoMargin">
+      <!---add licck event to catch event before bubbling up-->
+        <div class="infoBox" ng-show="infoActive" ng-click="stopPropagation()">
+
+          <div>
+            <div class="topLeftInfoIcon"><img src='{{iconPath}}' class="infoIcon"/></div>
+        
+          <div class="infoBoxTitle">
+            <span class="infoBoxPrice"><strong>${{addComma(housePointer["List Price"])}}
+            </strong></span><br><strong class="infoBoxAddress">{{addressString}}</strong>
+          </div> <!---end box title-->
+
+          <!--put a container around the beds/baths, thumbs icons, and SF text in between icons-->
+
+          <!---put the beds and baths in a line here-->
+            <div class="row autoMargin">
+
+                <div class="line col-xs-12"></div>
+
+            </div><!--close the tow of divider line-->
+
+            <div class="row"> 
+
+              <div class="thumbsDown thumbs col-xs-2">
+                 <at data-toggle="modal" data-target="#thumbsUpModal" ng-click="TEST('DOWN')"> <i class="fa fa-thumbs-down"></i></at>
+              </div>
+
+                  <div class="tableContainer col-xs-8">
+                    <table class="infoBoxTable">
+
+                            <tr>
+                              <td>Beds</td>
+                              <td>{{housePointer["Total Bedrooms"]}}</td> 
+                              
+                              
+                            
+                              <td>Sqft Above</td>   
+                              <td>{{addComma(housePointer["SqFt Above"])}}</td> 
+
+                            </tr>
+                            <tr>
+                              <td>Baths</td>
+                              <td>{{housePointer["Total Baths"]}}</td>
+                              
+                             
+                              <td>Sqft Whole</td> 
+                              <td>{{addComma(housePointer["SqFt Total"])}}</td>    
+                            </tr>
+                            
+                      </table>
+                    </div><!--end tableContianer-->
+
+
+              <div class="thumbsUp thumbs col-xs-2">
+                  <at data-toggle="modal" data-target="#thumbsUpModal" ng-click="TEST('UP')"> <i class="fa fa-thumbs-up"></i></at>
+              </div>
+
+            </div><!---end row-->
+         
+         </div>  <!--end infobox
+      </div>
+
+      </div> <!--end autoMargin-->
+
+       <!--{{searchCity}}       we don't need this to debug anymore
+        <button ng-click="newCenter()">Center</button>-->
+ 
+      
+  </div> <!--end screen myContainer-->
+
+  </body>
+</html>
