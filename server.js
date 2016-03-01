@@ -30,7 +30,7 @@ app.get('/', function(req, res){
 
 app.post('/api/searchMany', houseController.getManyHouses);
 app.post('/api/getAllPrices', houseController.getAllPrices);
-
+app.post('/api/getPricesAndSF',houseController.getPricesAndSF);
 
 app.post('/api/manySearch',houseController.getManyHouses);
 app.post('/api/houseFind', houseController.getHouseByMLS);

@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.0/angular.js"></script>
       <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.css">
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.js"></script>
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+       
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.js"></script>
 
-     <script type="text/javascript" src="../js/houseMain.js"></script>
+      <script src="https://code.highcharts.com/highcharts.js"></script>
+      <script src="https://code.highcharts.com/modules/exporting.js"></script>
+      <script type="text/javascript" src="../js/houseMain.js" defer></script>
 
 </head>
     <title>Database Retrieval</title>
@@ -27,14 +28,16 @@
     </form>
 
 
-    <form ng-submit="manySearch()" ne-model="multiSearch">
+    <form ng-submit="manySearch()" ne-model="multiSearch"><br>
         <input type="number" ng-model="multiSearch.minPrice" placeholder="Min Price"> 
-        <input type="number" ng-model="multiSearch.maxPrice" placeholder="Max Price"> 
+        <input type="number" ng-model="multiSearch.maxPrice" placeholder="Max Price"> <br>
         <input type="number" ng-model="multiSearch.bedrooms" placeholder="Min Bedrooms"> 
-        <input type="number" ng-model="multiSearch.bathrooms" placeholder="Min Bathrooms"> 
+        <input type="number" ng-model="multiSearch.bathrooms" placeholder="Min Bathrooms"> <br>
         <input type="number" ng-model="multiSearch.minSF" placeholder=" Min Square Feet"> 
         <input type="submit" value="submit">
     </form>
+    <br>
+    <button ng-click="getPricesAndSF()">Get all prices and SF</button><br>
     
      {{house}}
     
@@ -48,6 +51,7 @@
 
     <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
     <div id="containerScatter" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+    <div id="containerScatter2" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
       
   </body>
 </html>

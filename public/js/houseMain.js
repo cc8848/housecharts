@@ -11,6 +11,18 @@ myApp.controller('myAppController',['$scope', '$http', function($scope,$http){
     console.log("IS IT WORKING");
 
 
+    s.getPricesAndSF = function(){
+        $http.post('/api/getPricesAndSF')
+            .then(function(returnedData){
+                console.log("in return of post get prices and SF this work? ",returnedData.data);
+                buildScatterChartSF(returnedData.data);
+
+            })
+    }
+
+
+
+
    s.getPrices = function(){
     $http.post('/api/getAllPrices')
         .then(function(array){
@@ -19,7 +31,9 @@ myApp.controller('myAppController',['$scope', '$http', function($scope,$http){
             console.log("do we ever return here?? ");
             var scatterArray = groupPricesScatter(s.myArray);
             //pass the obj through - do I need to make it an array of arrays first?
+            console.log("do we return again to the getPrices function?? ");
             buildScatterChart(scatterArray);
+            console.log("do we return even without an explicit return?? ");
         })
    }
 
@@ -29,7 +43,7 @@ myApp.controller('myAppController',['$scope', '$http', function($scope,$http){
 
    function groupPrices(myArray){
         for (var arraySpot=0;arraySpot<20;arraySpot++){
-            console.log("arrayspot outer loop pos ",arraySpot);
+           
 
 
             for (var i=0;i<myArray.length;i++){
@@ -56,6 +70,7 @@ myApp.controller('myAppController',['$scope', '$http', function($scope,$http){
    function groupPricesScatter (myArray){
         //use myArray
         var scatterObj = {};
+
         for (var i = 0;i<myArray.length;i++){
             var price = myArray[i];
             if (scatterObj[price]==undefined){
@@ -137,7 +152,7 @@ function buildScatterChart(scatterArray){
                     title: {
                         text: 'Number of Houses',
                     },
-                    max:15,
+                    max:14,
                 },
                 legend: {
                     layout: 'vertical',
@@ -169,7 +184,7 @@ function buildScatterChart(scatterArray){
                         },
                         tooltip: {
                             headerFormat: '<b>{series.name}</b><br>',
-                            pointFormat: '{point.x} k, {point.y} houses'
+                            pointFormat: '{point.x}k, {point.y} houses'
                         }
                     }
                 },
@@ -184,6 +199,85 @@ function buildScatterChart(scatterArray){
 
 
 }
+
+//-------------------------------------------------
+
+function buildScatterChartSF(scatterArraySF){
+
+        $(function () {
+            $('#containerScatter2').highcharts({
+                chart: {
+                    type: 'scatter',
+                    zoomType: 'xy'
+                },
+                title: {
+                    text: 'Prices of houses in Denver'
+                },
+                subtitle: {
+                    text: 'Source: MLS'
+                },
+                xAxis: {
+                    title: {
+                        enabled: true,
+                        text: 'Price Point'
+                    },
+                    startOnTick: true,
+                    endOnTick: true,
+                    showLastLabel: true,
+                    max:2000000
+                },
+                yAxis: {
+                    title: {
+                        text: 'Square Footage',
+                    },
+                     max:10000,
+                },
+                legend: {
+                    layout: 'vertical',
+                    align: 'left',
+                    verticalAlign: 'top',
+                    x: 100,
+                    y: 60,
+                    floating: true,
+                    backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
+                    borderWidth: 1
+                },
+                plotOptions: {
+                    scatter: {
+                        marker: {
+                            radius: 5,
+                            states: {
+                                hover: {
+                                    enabled: true,
+                                    lineColor: 'rgb(100,100,100)'
+                                }
+                            }
+                        },
+                        states: {
+                            hover: {
+                                marker: {
+                                    enabled: false
+                                }
+                            }
+                        },
+                        tooltip: {
+                            headerFormat: '<b>{series.name}</b><br>',
+                            pointFormat: '${point.x}, {point.y} SF'
+                        }
+                    }
+                },
+                series: [{
+                    name: 'Houses',
+                    color: 'rgba(223, 83, 83, .5)',
+                    data: scatterArraySF
+
+                }]
+            });
+        });
+
+
+}
+
 
 //-------------------------------------------------
 
@@ -212,10 +306,7 @@ function buildScatterChart(scatterArray){
 			s.houses = [];	
             s.houses = data.data;
             s.search = {};
-               // s.houses[0]=s.houses[0];
-//                data.data.forEach(function(item){
-//                    s.houses.push(item);
-//                })
+
             
 			});
         

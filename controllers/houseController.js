@@ -22,10 +22,33 @@ var getHouseByMLS = function(req,res){
 };
 
 
+var getPricesAndSF = function(req,res){
+	
+	console.log("GETTING ALL PRICE AND SF NUMBERS FOR ALL HOUSES ");
+
+	var priceSFArray = [];
+	//returns an array of arrays, [price,sf]
+	model.find({},function(err,docs){
+		for (var i=0;i<docs.length;i++){
+			priceSFArray.push([docs[i]["List Price"],
+							   docs[i]["SqFt Total"]
+								]);	
+		}		
+		res.send(priceSFArray);
+	})
+}
+//to send back key value objects vs mini arrays
+// priceSFArray.push({'List Price':docs[i]["List Price"],
+// 							   'SqFt Total':docs[i]["SqFt Total"],
+// 								});	
+
+
 var getAllPrices = function (req,res){
 
 	console.log("GETTING ALL HOUSE OBJECTS BY PRICE");
+	
 	var r=req.body;
+	
 	var priceArray = [];
 	model.find({}, function(err,docs){
 		for (var i=0;i<docs.length;i++){
@@ -77,4 +100,5 @@ module.exports = {
     getHouseByMaxPrice:getHouseByMaxPrice,
     getAllPrices:getAllPrices,
     getManyHouses:getManyHouses,
+    getPricesAndSF:getPricesAndSF,
 }
