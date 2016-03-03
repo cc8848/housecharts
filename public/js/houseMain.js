@@ -1,238 +1,149 @@
 var myApp = angular.module("myApp",[]);
 
 myApp.controller('myAppController',['$scope', '$http', function($scope,$http){
-	var s = $scope;
-	
-	s.house={};
+	var s = $scope; 
+    var plot = [] 
+    s.min = []
+    s.max = []
     s.houses=[];
-    s.myPriceArray=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-    s.myArray = [];
+//----------------------------- final output format ----------------------------
+    s.averages = [
+            [50000, 1],
+            [100000, 2],
+            [150000, 2],
+            [200000, 3],
+            [250000, 4],
+            [300000, 5],
+            [350000, 6],
+        ];
+    
+//------------------------- requst for info ------------------------------------------
 
-    console.log("IS IT WORKING");
-
-
-   s.getPrices = function(){
-    $http.post('/api/getAllPrices')
-        .then(function(array){
-            s.myArray = array.data;
-            groupPrices(s.myArray);
-            console.log("do we ever return here?? ");
-            var scatterArray = groupPricesScatter(s.myArray);
-            //pass the obj through - do I need to make it an array of arrays first?
-            buildScatterChart(scatterArray);
-        })
-   }
-
-   s.getPrices();
-
-   //called by getPrices function to group them into graphable form
-
-   function groupPrices(myArray){
-        for (var arraySpot=0;arraySpot<20;arraySpot++){
-            console.log("arrayspot outer loop pos ",arraySpot);
-
-
-            for (var i=0;i<myArray.length;i++){
-                var price = myArray[i];
-
-
-                if (price<((arraySpot+1)*50000) && price>((arraySpot)*50000)){
-                    
-                    s.myPriceArray[arraySpot]+=1;
-                }
+   s.manySearch = function(){
+        $http.post('/api/manySearch')
+            .then(function(returnData){
+                s.houses = spliceTop(returnData.data);//cuts out the top price values
+                console.log(s.houses.length)
+                var houseGroups = _.groupBy(s.houses, function(obj){return 50000*Math.ceil((obj['List Price'])/50000)})
+                // console.log(houseGroups)
+                s.ranges = (Object.keys(houseGroups))
                 
-            }
-
-
-        }
-        console.log("num houses at price array ",s.myPriceArray);
-        buildBarChart();
-
-        return ("coming back from groupPrices");
-
-   }
-
-
-   function groupPricesScatter (myArray){
-        //use myArray
-        var scatterObj = {};
-        for (var i = 0;i<myArray.length;i++){
-            var price = myArray[i];
-            if (scatterObj[price]==undefined){
-                scatterObj[price]=1;
-            }   else {
-                scatterObj[price]+=1;
-            }
-        }
-
-        //this object will have a key for every unique price point, and the value is the # of houses at that point
-        //console.log("scatterObj ",scatterObj);
-        //convert this stupid shit to an array
-        var scatterArray = [];
-        for (field in scatterObj){
-            scatterArray.push([field,scatterObj[field]]);
-        }
-        //console.log("did this turn into an array? ",scatterArray);
-        return (scatterArray);
-
-   }
-
-
-
-//-------------------------------------------------------------------
-
-function buildBarChart (scatterObj){
-
-
-        $(function () { 
-           $('#container').highcharts({
-               chart: {
-                   type: 'bar'
-               },
-               title: {
-                   text: 'Home Prices'
-               },
-               xAxis: {
-                   categories: ['50k','100k','150k','200k','250k','300k','350k','400k','450k','500k','550k','600k','650k','700k','750k','800k','850k','900k','950k','1000k']
-               },
-               yAxis: {
-                   title: {
-                       text: 'Number of Houses'
-                   }
-               },
-              series: [{
-               data: s.myPriceArray
-             }]
-           });
-        });
-
-    return ("ok");
-
-}
-//--------------------------------------------------
-function buildScatterChart(scatterArray){
-
-        $(function () {
-            $('#containerScatter').highcharts({
-                chart: {
-                    type: 'scatter',
-                    zoomType: 'xy'
-                },
-                title: {
-                    text: 'Prices of houses in Denver'
-                },
-                subtitle: {
-                    text: 'Source: MLS'
-                },
-                xAxis: {
-                    title: {
-                        enabled: true,
-                        text: 'Price Point'
-                    },
-                    startOnTick: true,
-                    endOnTick: true,
-                    showLastLabel: true
-                },
-                yAxis: {
-                    title: {
-                        text: 'Number of Houses',
-                    },
-                    max:15,
-                },
-                legend: {
-                    layout: 'vertical',
-                    align: 'left',
-                    verticalAlign: 'top',
-                    x: 100,
-                    y: 60,
-                    floating: true,
-                    backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
-                    borderWidth: 1
-                },
-                plotOptions: {
-                    scatter: {
-                        marker: {
-                            radius: 5,
-                            states: {
-                                hover: {
-                                    enabled: true,
-                                    lineColor: 'rgb(100,100,100)'
-                                }
-                            }
-                        },
-                        states: {
-                            hover: {
-                                marker: {
-                                    enabled: false
-                                }
-                            }
-                        },
-                        tooltip: {
-                            headerFormat: '<b>{series.name}</b><br>',
-                            pointFormat: '{point.x} k, {point.y} houses'
-                        }
+                // for(var i = 0; i <s.houses.length; i++){
+                //    if(s.houses[i]['List Price'] < 50000){
+                //     cat1.push(s.houses[i])
+                //    // } else if(s.houses[i]['List Price'] < 150000){
+                //    //  cat2.push(s.houses[i])
+                   
+                //    //  obj3.push(s.houses[i])
+                //    }
+                // }
+                for(var index in houseGroups){
+                    // console.log(houseGroups[index])
+                    var temp = houseGroups[index]
+                    var beds = []
+                    for(var i=0;i<temp.length; i++){
+                        beds.push(temp[i]['Total Bedrooms'])
                     }
-                },
-                series: [{
-                    name: 'Houses',
-                    color: 'rgba(223, 83, 83, .5)',
-                    data: scatterArray
-
-                }]
+                    s.max.push(_.max(beds))
+                    s.min.push(_.min(beds))
+                }
+                console.log(s.ranges)
+                console.log(s.min)
+                console.log(s.max)
+                
             });
+
+    }
+
+    s.manySearch()
+    
+
+//--------------------------------- helper functions ----------------------
+    function spliceTop(arr){
+        for(var obj in arr){
+            if(arr[obj]['List Price'] < 1200000){
+                // console.log(arr[obj]['List Price'])
+                plot.push(arr[obj])
+            }
+        }
+        console.log(plot)
+        return plot
+    }
+
+    function addTo(arr, arr2){
+        for(var i = 0; i < arr.length; i++){
+            arr.push(arr2[i])
+        }
+        console.log(arr)
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // function pullNumbers(arr){
+    //     for(var j=0; j < s.ranges.length; j++){
+    //         s.ranges[j].push(max value in values array for each priceCat)
+    //         s.ranges[j].push(_.min(arr50k[j]))
+    //         // console.log(firstArr)
+    //         arr50k = []
+    //     }
+    //     console.log(s.ranges)
+    // }
+//------------------------------------ parameters for range chart -------------------------
+    $(function () {
+        $('#containerRange').highcharts({
+
+            title: {
+                text: 'Number of rooms based on price'
+            },
+
+            xAxis: {
+                // categories: ['50k','100k','150k','200k','250k','300k','350k','400k','450k','500k','550k','600k','650k','700k','750k','800k','850k','900k','950k','1000k']
+                //does not work
+            },
+
+            yAxis: {
+                title: {
+                    text: 'Room Number'
+                }
+            },
+
+            tooltip: {
+                crosshairs: true,
+                shared: true,
+            },
+
+            legend: {
+            },
+
+            series: [{
+                name: 'price point',
+                data: s.averages,
+                zIndex: 1,
+                marker: {
+                    fillColor: 'white',
+                    lineWidth: 2,
+                    lineColor: Highcharts.getOptions().colors[0]
+                }
+            }, {
+                name: 'Range',
+                data: s.ranges,
+                type: 'arearange',
+                lineWidth: 0,
+                linkedTo: ':previous',
+                color: Highcharts.getOptions().colors[0],
+                fillOpacity: 0.3,
+                zIndex: 0
+            }]
         });
-
-
-}
-
-//-------------------------------------------------
-
-
-
-	s.findHouse = function (){
-        s.houses = [];
-        console.log("we are in the find house click event. ")
-		console.log(s.search.MLSNumber);
-		$http.post('/api/houseFind',s.search)
-			.then (function(data){
-				console.log("we are in the return of the post ",data);
-				s.house = data.data;
-                s.search = {};
-			});
-	}
-    
-    s.findHouseMaxPrice = function (){
-        
-        console.log("we are in the find house MAX click event. ")
-		console.log(s.search.MLSNumber);
-        s.house={};
-        $http.post('/api/houseFind/Max',s.search)
-			.then (function(data){
-				console.log("we are in the return of the post ",data);
-			s.houses = [];	
-            s.houses = data.data;
-            s.search = {};
-               // s.houses[0]=s.houses[0];
-//                data.data.forEach(function(item){
-//                    s.houses.push(item);
-//                })
-            
-			});
-        
-        
-    }
-    
-    s.manySearch = function(){
-        console.log("we are in teh angular s.manySearch function", s.multiSearch)
-        $http.post('/api/manySearch',s.multiSearch)
-            .then(function(data){
-                console.log("we're back in the response of many criteria search, " ,data.data.length," spots in array");
-                s.houses=data.data;
-            });
-    }
-
-
-    
-
-
+    });
 }]);

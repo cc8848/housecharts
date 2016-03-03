@@ -15,12 +15,8 @@ var getHouseByMLS = function(req,res){
 		}else{
 			res.send(doc);
 		}
-	})
-    
-    
-    
+	}) 
 };
-
 
 var getAllPrices = function (req,res){
 
@@ -36,24 +32,11 @@ var getAllPrices = function (req,res){
 }
 
 var getManyHouses = function(req,res){
-	console.log("We are in the controller, getManyHouses", req.body);
-	
-	var r = req.body;
-
-	model.find({$and :[
+	var roomPrice = {}
+	model.find({}, function(err,docs){
 		
-		{'List Price':{$gte:r.MinPrice, $lte:r.MaxPrice}},
-		{'Total Bedrooms':{$gte:r.Beds}},
-		{'Total Baths':{$gte:r.Baths}},
-		{'SqFt Total':{$gte:r.minSF}}]}, function(err,docs){
-			if (err){
-				console.log(err);
-				res.send(err);
-			}else{
-				console.log("returning # of results in an array, ",docs.length);
-				res.send(docs);
-			}
-		});
+		res.send(docs);
+	});
 }
 
 var getHouseByMaxPrice = function(req,res){
