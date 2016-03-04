@@ -11,16 +11,6 @@ myApp.controller('myAppController',['$scope', '$http', function($scope,$http){
     console.log("IS IT WORKING");
 
 
-    s.getPricesAndSF = function(){
-        $http.post('/api/getPricesAndSF')
-            .then(function(returnedData){
-                console.log("in return of post get prices and SF,does this work? obj of arrays? ",returnedData);
-                buildScatterChartSF(returnedData.data);
-
-            })
-    }
-
-
 
 
    s.getPrices = function(){
@@ -38,6 +28,19 @@ myApp.controller('myAppController',['$scope', '$http', function($scope,$http){
    }
 
    s.getPrices();
+
+
+       s.getPricesAndSF = function(){
+        $http.post('/api/getPricesAndSF')
+            .then(function(returnedData){
+                console.log("in return of post get prices and SF,does this work? obj of arrays? ",returnedData);
+                buildScatterChartSF(returnedData.data);
+
+            })
+    }
+
+
+    s.getPricesAndSF();
 
    //called by getPrices function to group them into graphable form
 

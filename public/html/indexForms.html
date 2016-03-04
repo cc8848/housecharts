@@ -15,9 +15,34 @@
     <title>Database Retrieval</title>
   </head>
   <body ng-controller = "myAppController">
+    <h1>ENTER INFO IN A FIELD</h1>
     
-   <!--  <button ng-click="getPricesAndSF()">Get all prices and SF</button><br> -->
+    <form ng-submit="findHouse()" ng-model="search">
+        <input type="text" ng-model = "search.MLSNumber" placeholder="MLS Number">
+        <input type="submit" value="submit">
+    </form>
+      
+    <form ng-submit="findHouseMaxPrice()" ng-model="search">
+        <input type="text" ng-model = "search.MaxPrice" placeholder="Max Price">
+        <input type="submit" value="submit">
+    </form>
 
+
+    <form ng-submit="manySearch()" ne-model="multiSearch"><br>
+        <input type="number" ng-model="multiSearch.minPrice" placeholder="Min Price"> 
+        <input type="number" ng-model="multiSearch.maxPrice" placeholder="Max Price"> <br>
+        <input type="number" ng-model="multiSearch.bedrooms" placeholder="Min Bedrooms"> 
+        <input type="number" ng-model="multiSearch.bathrooms" placeholder="Min Bathrooms"> <br>
+        <input type="number" ng-model="multiSearch.minSF" placeholder=" Min Square Feet"> 
+        <input type="submit" value="submit">
+    </form>
+    <br>
+    <button ng-click="getPricesAndSF()">Get all prices and SF</button><br>
+    
+     {{house}}
+    
+      
+    <h4>MLS MATCHES</h4>
     <!--<ol>
         <li ng-repeat = "houseObj in houses">
         {{houseObj["MLS Number"]}} ${{houseObj["List Price"]}}  Beds {{houseObj["Total Bedrooms"]}}

@@ -58,6 +58,7 @@ var getAllPrices = function (req,res){
 	});
 }
 
+/*
 var getManyHouses = function(req,res){
 	console.log("We are in the controller, getManyHouses", req.body);
 	
@@ -78,6 +79,39 @@ var getManyHouses = function(req,res){
 			}
 		});
 }
+*/
+
+
+var getManyHouses = function(req,res){
+	console.log("We are in the controller, getManyHouses", req.body);
+	
+	var r = req.body;
+
+	model.find({$and :[
+		
+		{'List Price':{$gte:r.minPrice, $lte:r.maxPrice}},
+		{'Total Bedrooms':{$gte:r.bedrooms}},
+		{'Total Baths':{$gte:r.bathrooms}},
+		{'Status':'Active'},
+		{'SqFt Total':{$gte:r.minSF}}]}, function(err,docs){
+			if (err){
+				console.log(err);
+				res.send(err);
+			}else{
+				console.log("returning # of results in an array, ",docs.length);
+				//res.send(docs);
+				//turn the docs array into an object of objects?
+				var houseHash = {};
+				for (var i = 0;i<docs.length;i++){
+					var h = docs[i];
+
+					houseHash[h["MLS Number"]]=h;
+				}
+				console.log("DID WE MAKE A HASH :",houseHash);
+				res.send(houseHash);
+			}
+		});
+	}//end getmanyhouses
 
 var getHouseByMaxPrice = function(req,res){
     console.log("We are in teh controller, getHouseByMaxPrice ", req.body.MaxPrice);
