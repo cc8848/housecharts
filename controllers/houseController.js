@@ -18,6 +18,17 @@ var getHouseByMLS = function(req,res){
 	}) 
 };
 
+var getYearBuilt = function(req, res){
+
+	var yearArray = [];
+	model.find({}, function(err, dox){
+		for (var i=0;i<dox.length;i++){
+			yearArray.push([dox[i]['Year Built'], dox[i]['SqFt Finished']]);
+		}
+		res.send(yearArray);
+	});
+}
+
 var getAllPrices = function (req,res){
 
 	console.log("GETTING ALL HOUSE OBJECTS BY PRICE");
@@ -54,10 +65,10 @@ var getHouseByMaxPrice = function(req,res){
     });             
 };
 
-
 module.exports = {
 	getHouseByMLS:getHouseByMLS,
     getHouseByMaxPrice:getHouseByMaxPrice,
     getAllPrices:getAllPrices,
     getManyHouses:getManyHouses,
+    getYearBuilt:getYearBuilt,
 }

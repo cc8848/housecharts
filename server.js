@@ -28,6 +28,8 @@ app.get('/', function(req, res){
 
 
 
+app.post('/api/getYearBuilt', houseController.getYearBuilt);
+
 app.post('/api/searchMany', houseController.getManyHouses);
 app.post('/api/getAllPrices', houseController.getAllPrices);
 
